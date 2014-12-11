@@ -15,6 +15,9 @@ console.log(projectPrefix);
 var plistPath = getProjectInfoPath(_projectPath);
 console.log(plistPath);
 
+var plistInfo = getProjectInfoContent(_projectPath);
+console.log(plistInfo);
+
 /**
  *	获取工程项目路径
  */
@@ -48,14 +51,67 @@ function getProjectPrefix(searchPath) {
  *	获取工程项目的Info.plist所在路径
  */
 function getProjectInfoPath(searchPath) {
-	// 获取pbxproj文件路径
-	var pbxpojPath = getPbProjectCompose(searchPath).join('/');
+	// 切割路径元素
+	var compose = getPbProjectCompose(searchPath);
 	
+	// 获取pbxproj文件路径
+	var pbxpojPath = compose.join('/');
+	
+	// 如果没有找到，那么返回未找到
+	if (pbxpojPath == DEFINE_NOFOUND) {
+		return DEFINE_NOFOUND;
+	}
+
 	// 获取文件内容
-	var content = shell.cat(projectPrefix);
+	var content = shell.cat(pbxpojPath);
 
-//	INFOPLIST_FILE = "MEMobilityCenter/MEMobilityCenter-Info.plist";
+	// 正则获取匹配plist集合
+	var reg = /INFOPLIST_FILE = .*/g;
+	var res = content.match(reg);
 
+	// 设置默认plistPath路径
+	var plistPath = DEFINE_NOFOUND;
+
+	for (var i = 0; i < res.length; i++) {
+		// 获取元素对象
+		var obj = res[i];
+
+		// 获取Info.plist路径
+		if(obj.indexOf("Tests") == -1) {
+			// 筛选数据
+			obj = obj.split(' = ')[1];
+			obj = obj.split(';')[0];
+
+			plistPath = obj;
+			break;
+		}
+	}
+
+	compose.pop();
+	compose.pop();
+
+	// 项目路径
+	var projectPath = compose.join('/');
+	
+	plistPath = projectPath + '/' + plistPath;
+
+	return plistPath;
+}
+
+/**
+ *	获取Info.plist内容
+ */
+function getProjectInfoContent(searchPath) {
+	// 获取plistPath
+	var plistPath = getProjectInfoPath(searchPath);
+
+	if (plistPath == DEFINE_NOFOUND) {
+		return null;
+	}
+
+	var content = shell.cat(plistPath);
+
+	return content;
 }
 
 /**
@@ -75,9 +131,6 @@ function getPbProjectCompose(searchPath) {
 
 	// 获取路径组成部分
 	var pathCompose = pbxpojPath.split('/');
-	
-	// 回到上级目录
-	pathCompose.pop();
 
 	return pathCompose;
 }

@@ -1,22 +1,7 @@
 var shell = require('shelljs');
 
+// 查找失败.
 var DEFINE_NOFOUND = 'NOFOUND';
-
-// iOS工程项目路径
-var _projectPath = '/Users/andy/Desktop/demo';
-
-
-var projectPath = getProjectPath(_projectPath);
-console.log(projectPath);
-
-var projectPrefix = getProjectPrefix(_projectPath);
-console.log(projectPrefix);
-
-var plistPath = getProjectInfoPath(_projectPath);
-console.log(plistPath);
-
-var plistInfo = getProjectInfoContent(_projectPath);
-console.log(plistInfo);
 
 /**
  *	获取工程项目路径
@@ -30,6 +15,7 @@ function getProjectPath(searchPath) {
 
 	return projectPath;
 }
+exports.getProjectPath = getProjectPath;
 
 /**
  *	获取工程项目前缀名
@@ -46,6 +32,7 @@ function getProjectPrefix(searchPath) {
 
 	return projectPrefix;
 }
+exports.getProjectPrefix = getProjectPrefix;
 
 /**
  *	获取工程项目的Info.plist所在路径
@@ -97,6 +84,7 @@ function getProjectInfoPath(searchPath) {
 
 	return plistPath;
 }
+exports.getProjectInfoPath = getProjectInfoPath;
 
 /**
  *	获取Info.plist内容
@@ -106,13 +94,42 @@ function getProjectInfoContent(searchPath) {
 	var plistPath = getProjectInfoPath(searchPath);
 
 	if (plistPath == DEFINE_NOFOUND) {
-		return null;
+		return DEFINE_NOFOUND;
 	}
 
+	// plist内容
 	var content = shell.cat(plistPath);
 
 	return content;
 }
+exports.getProjectInfoContent = getProjectInfoContent;
+
+/**
+ *	获取项目版本
+ */
+function getProjectVersion(searchPath) {
+	// 获取Info.plist内容
+	var plistContent = getProjectInfoContent(searchPath);
+
+	if (plistContent == DEFINE_NOFOUND) {
+		return DEFINE_NOFOUND;
+	};
+
+	// 搜索结果集合
+	var searchSet = plistContent.match(/<key>CFBundleShortVersionString<\/key>\n.*<string>.*<\/string>/g);
+	// 搜索匹配结果
+	var searchResult = searchSet[0];
+
+	// 截断获取应用版本
+	searchResult = searchResult.split('<string>')[1];
+	searchResult = searchResult.split('</string>')[0];
+
+	return searchResult;
+}
+exports.getProjectVersion = getProjectVersion;
+
+
+//===================	Helper	=====================================
 
 /**
  *	搜索目录，获取项目配置文件路径组成元素
@@ -125,7 +142,7 @@ function getPbProjectCompose(searchPath) {
 	var pbxpojPath = filterProject(searchArray);
 
 	// 获取失败，回调null
-	if (pbxpojPath == null) {
+	if (pbxpojPath == DEFINE_NOFOUND) {
 		return [DEFINE_NOFOUND];
 	};
 
@@ -154,7 +171,7 @@ function getProjectCompose(searchPath) {
 function filterProject(searchArray) {
 	// 搜索结果为空，项目不存在
 	if (searchArray.length == 0) {
-		return null;
+		return DEFINE_NOFOUND;
 	};
 
 	// 搜索结果只有一个，那么它就是主项目工程
@@ -180,7 +197,7 @@ function filterProject(searchArray) {
     	}
 	}
 
-	return null;
+	return DEFINE_NOFOUND;
 }
 
 

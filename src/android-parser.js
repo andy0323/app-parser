@@ -110,7 +110,13 @@ function getProjectProperties(searchPath) {
 	for (var i = 0; i < searchArray.length; i++) {
 		// 配置项路径
 		var propertiesPath = searchArray[i];
-		
+	
+		// 过滤__MACOSX文件夹数据
+		var pathReg = /__MACOSX/;
+		if (pathReg.test(propertiesPath)) {
+			continue;
+		};
+
 		// 配置项内容
 		var content = shell.cat(propertiesPath);
 
@@ -121,9 +127,12 @@ function getProjectProperties(searchPath) {
 		var isMatching = reg.test(content);
 		
 		if (!isMatching) {
+			console.log(propertiesPath);
 			propertiesSet.push(propertiesPath);
 		}
 	}
+
+	console.log(propertiesSet);
 
 	return propertiesSet;
 }

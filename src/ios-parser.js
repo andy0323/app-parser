@@ -1,7 +1,7 @@
 var shell = require('shelljs');
 
 // 查找失败.
-var DEFINE_NOFOUND = 'NOFOUND';
+var DEFINE_ERROR = 'DEFINE_ERROR';
 
 /**
  *	获取工程项目路径
@@ -45,8 +45,8 @@ function getProjectInfoPath(searchPath) {
 	var pbxpojPath = compose.join('/');
 	
 	// 如果没有找到，那么返回未找到
-	if (pbxpojPath == DEFINE_NOFOUND) {
-		return DEFINE_NOFOUND;
+	if (pbxpojPath == DEFINE_ERROR) {
+		return DEFINE_ERROR;
 	}
 
 	// 获取文件内容
@@ -57,7 +57,7 @@ function getProjectInfoPath(searchPath) {
 	var res = content.match(reg);
 
 	// 设置默认plistPath路径
-	var plistPath = DEFINE_NOFOUND;
+	var plistPath = DEFINE_ERROR;
 
 	for (var i = 0; i < res.length; i++) {
 		// 获取元素对象
@@ -93,8 +93,8 @@ function getProjectInfoContent(searchPath) {
 	// 获取plistPath
 	var plistPath = getProjectInfoPath(searchPath);
 
-	if (plistPath == DEFINE_NOFOUND) {
-		return DEFINE_NOFOUND;
+	if (plistPath == DEFINE_ERROR) {
+		return DEFINE_ERROR;
 	}
 
 	// plist内容
@@ -111,8 +111,8 @@ function getProjectVersion(searchPath) {
 	// 获取Info.plist内容
 	var plistContent = getProjectInfoContent(searchPath);
 
-	if (plistContent == DEFINE_NOFOUND) {
-		return DEFINE_NOFOUND;
+	if (plistContent == DEFINE_ERROR) {
+		return DEFINE_ERROR;
 	};
 
 	// 搜索结果集合
@@ -142,8 +142,8 @@ function getPbProjectCompose(searchPath) {
 	var pbxpojPath = filterProject(searchArray);
 
 	// 获取失败，回调null
-	if (pbxpojPath == DEFINE_NOFOUND) {
-		return [DEFINE_NOFOUND];
+	if (pbxpojPath == DEFINE_ERROR) {
+		return [DEFINE_ERROR];
 	};
 
 	// 获取路径组成部分
@@ -171,7 +171,7 @@ function getProjectCompose(searchPath) {
 function filterProject(searchArray) {
 	// 搜索结果为空，项目不存在
 	if (searchArray.length == 0) {
-		return DEFINE_NOFOUND;
+		return DEFINE_ERROR;
 	};
 
 	// 搜索结果只有一个，那么它就是主项目工程
@@ -197,7 +197,7 @@ function filterProject(searchArray) {
     	}
 	}
 
-	return DEFINE_NOFOUND;
+	return DEFINE_ERROR;
 }
 
 

@@ -69,7 +69,14 @@ function getProjectInfoPath(searchPath) {
 			obj = obj.split(' = ')[1];
 			obj = obj.split(';')[0];
 
-			plistPath = obj;
+			// 部分数据会有双引号.需要进行剔除
+			var objCompose = obj.split('\"');
+			if (objCompose.length == 3) {
+				plistPath = objCompose[1];
+			}else {
+				plistPath = obj;				
+			}
+
 			break;
 		}
 	}

@@ -10,6 +10,10 @@ function getProjectPath(searchPath) {
 	// 获取工程项目路径组成元素
 	var compose = getProjectCompose(searchPath);
 
+	if (compose.length == 0) {
+		return DEFINE_ERROR;
+	};
+	
 	// 工程项目路径
 	var projectPath = compose.join('/');
 

@@ -1,5 +1,12 @@
+/**
+ * iOS数据解析对象
+ */
 var iosParser = require('./src/ios-parser.js');
-var androidParser = require('./src/android-parser.js');
+exports.iosParser = iosParser;
 
-exports.iosVersion     = iosParser.getProjectVersion;
-exports.androidVersion = androidParser.getProjectVersion;
+/**
+ *	Android数据解析对象  
+ */
+var androidParser = require('./src/android-parser.js');
+exports.androidParser = androidParser;
+
